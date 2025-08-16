@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f9;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 3em;
+      color: red;
+    }
+    .birthday-message {
+      font-size: 2em;
+      font-weight: bold;
+      color: #ff69b4;
+      overflow: hidden;
+      white-space: nowrap;
+      display: inline-block;
+      animation: slide 8s linear infinite;
+    }
+    @keyframes slide {
+      from { transform: translateX(100%); }
+      to { transform: translateX(-100%); }
+    }
+    .movie {
+      display: inline-block;
+      position: relative;
+      margin: 20px 0;
+    }
+    .movie_video {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+    }
+    .movie_btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+    }
+    #clock {
+      font-size: 2em;
+      margin: 20px 0;
+    }
+    a {
+      color: #0066cc;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>お誕生日おめでとう！</h1>
+  <p class="birthday-message">Happy 21th Birthday!</p>
+
+  <div class="movie">
+    <video class="movie_video" src="はぴばゆん.mp4" playsinline></video>
+    <img class="movie_btn" src="再生ボタン.png" alt="再生ボタン">
+  </div>
+
+  <h2>現在時刻</h2>
+  <div id="clock">--:--:--</div>
+
+  <p>
+    <a href="https://localidp.ait230.tokushima-u.ac.jp/idp/profile/SAML2/Redirect/SSO?execution=e1s1">徳島大学manaba</a>
+  </p>
+
+  <script>
+    /* 時計更新 */
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    /* 動画関連 */
+    const videos = document.querySelectorAll('.movie_video');
+    let fullscreenFlag = false;
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+
+    function handleFullscreenChange() {
+      fullscreenFlag = !!(document.fullscreenElement ||
+                          document.webkitFullscreenElement ||
+                          document.mozFullScreenElement);
+      if (!fullscreenFlag) {
+        videos.forEach(v => {
+          if (v.paused) v.removeAttribute('controls');
+        });
+      }
+    }
+
+    videos.forEach(video => {
+      const btn = video.nextElementSibling;
+
+      video.addEventListener('playing', () => {
+        btn.style.display = 'none';
+        video.setAttribute('controls', '');
+      });
+
+      video.addEventListener('pause', () => {
+        if (!video.seeking && !fullscreenFlag) {
+          video.removeAttribute('controls');
+          btn.style.display = 'block';
+        }
+      });
+
+      video.addEventListener('click', () => {
+        if (video.paused && !fullscreenFlag) video.play();
+      });
+
+      btn.addEventListener('click', () => {
+        if (video.paused) video.play();
+      });
+    });
+  </script>
+</body>
+</html>
